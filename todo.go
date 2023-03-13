@@ -70,3 +70,13 @@ func (t *Todos) Load(filename string) error {
 
 	return nil
 }
+
+func (t *Todos) Read(filename string) error {
+	data, err := json.Marshal(t)
+
+	if err != nil {
+		return err
+	}
+
+	return os.WriteFile(filename, data, 0644)
+}
