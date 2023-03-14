@@ -71,7 +71,7 @@ func (t *Todos) Load(filename string) error {
 	return nil
 }
 
-func (t *Todos) Read(filename string) error {
+func (t *Todos) Store(filename string) error {
 	data, err := json.Marshal(t)
 
 	if err != nil {
