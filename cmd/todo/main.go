@@ -19,6 +19,8 @@ func main() {
 
 	delete := flag.Int("delete", 0, "deletes a todo from the file")
 
+	list := flag.Bool("list", false, "prints list of todos")
+
 	flag.Parse()
 
 	todos := &todo.Todos{}
@@ -61,6 +63,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, err.Error())
 			os.Exit(1)
 		}
+	case *list:
+		todos.Print()
 	default:
 		fmt.Fprintln(os.Stdout, "Invalid command")
 		os.Exit(0)
