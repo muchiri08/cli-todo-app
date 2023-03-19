@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/alexeyco/simpletable"
 	"os"
 	"time"
+
+	"github.com/alexeyco/simpletable"
 )
 
 type item struct {
@@ -54,12 +55,22 @@ func (t *Todos) Delete(index int) error {
 }
 
 func (t *Todos) Load(filename string) error {
+
+	_, err := os.Stat(filename)
+
+	//check if file exist. if not create it
+	if os.IsNotExist(err) {
+		file, err := os.Create(filename)
+
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+	}
+
 	file, err := os.ReadFile(filename)
 
 	if err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			return nil
-		}
 		return err
 	}
 	if len(file) == 0 {
@@ -109,7 +120,7 @@ func (t *Todos) Print() {
 
 		if item.Done {
 			id = green(fmt.Sprintf("%d", index))
-			task = green(fmt.Sprintf("\u2705 %s", item.Task))
+			task = green(fmt.Sprintf("\u2713 %s", item.Task))
 			done = green(fmt.Sprintf("%t", item.Done))
 			createdAt = green(item.CreatedAt.Format(time.RFC822))
 			completedAt = green(item.CompletedAt.Format(time.RFC822))
