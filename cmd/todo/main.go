@@ -19,7 +19,7 @@ func main() {
 
 	add := flag.Bool("add", false, "add a new todo")
 
-	complete := flag.Int("complete", 0, "mark a todo as complete")
+	complete := flag.Int("complete", 0, "mark a todo as completed")
 
 	delete := flag.Int("delete", 0, "deletes a todo from the file")
 
@@ -37,41 +37,22 @@ func main() {
 	switch {
 	case *add:
 		task, err := getInput(os.Stdin, flag.Args()...)
-
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err.Error())
-			os.Exit(1)
-		}
+		checkError(err)
 		todos.Add(task)
 		err = todos.Store(todoFile)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err.Error())
-			os.Exit(1)
-		}
+		checkError(err)
 	case *complete > 0:
 		err := todos.Complete(*complete)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err.Error())
-			os.Exit(1)
-		}
+		checkError(err)
 
 		err = todos.Store(todoFile)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err.Error())
-			os.Exit(1)
-		}
+		checkError(err)
 	case *delete > 0:
 		err := todos.Delete(*delete)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err.Error())
-			os.Exit(1)
-		}
+		checkError(err)
 
 		err = todos.Store(todoFile)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err.Error())
-			os.Exit(1)
-		}
+		checkError(err)
 	case *list:
 		todos.Print()
 	default:
@@ -93,11 +74,18 @@ func getInput(r io.Reader, args ...string) (string, error) {
 		return "", err
 	}
 
-	text := scanner.Text()
+	text := strings.TrimSpace(scanner.Text())
 
-	if len(text) == 0 {
+	if len(text) < 1 {
 		return "", errors.New("todo cannot be empty")
 	}
 
 	return text, nil
+}
+
+func checkError(err error) {
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err.Error())
+		os.Exit(1)
+	}
 }
